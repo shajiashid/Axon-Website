@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import FloatingHeading from './FloatingHeading.jsx'
 
 const EMPTY = { name: '', email: '', phone: '', destination: 'New Zealand', message: '' }
 
@@ -104,9 +105,12 @@ export default function Contact() {
     <section id="contact" className="section contact" ref={sectionRef}>
       <div className="container contact__grid">
         <div className="contact__intro reveal">
-          <h2 className="section-title contact__title">
-            Start your nursing journey today
-          </h2>
+          <FloatingHeading
+            className="section-title contact__title"
+            text="Start your nursing journey today"
+            accent
+            playful
+          />
           <p className="contact__lead">
             Share a few details and our advisors will get back to you within one
             business day with a personalised roadmap.
