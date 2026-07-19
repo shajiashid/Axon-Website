@@ -101,9 +101,52 @@ function isEmail(v) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
 }
 
+// Axon contact details — shown in the welcome state and used to build the
+// welcome email template that new subscribers receive.
+const CONTACT = {
+  email: 'info@axoncareers.co.nz',
+  website: 'https://axoncareers.co.nz',
+  whatsapp: '+64 22 055 3352',
+  phones: [
+    { flag: '🇮🇳', label: 'India', number: '+91 99470 82800' },
+    { flag: '🇦🇪', label: 'UAE', number: '+971 55 810 4647' },
+    { flag: '🇳🇿', label: 'New Zealand', number: '+64 22 682 2322' },
+  ],
+}
+
+// Compose a "Welcome to Axon Careers" email template (with contact details)
+// pre-addressed to the new subscriber, for the mailto scheme.
+function buildWelcomeMailto(to) {
+  const body = [
+    'Welcome to Axon Careers! 🎉',
+    '',
+    "Thank you for subscribing. You'll now receive nursing-abroad tips,",
+    'registration updates, and exam guidance for New Zealand & Australia.',
+    '',
+    'Here is how to reach us anytime:',
+    '',
+    `Email:   ${CONTACT.email}`,
+    `Website: ${CONTACT.website}`,
+    '',
+    'Call or message us:',
+    ...CONTACT.phones.map((p) => `  ${p.label}: ${p.number}`),
+    `  WhatsApp: ${CONTACT.whatsapp}`,
+    '',
+    'We guide internationally qualified nurses through registration, exams,',
+    'jobs, and PR — every step of the way.',
+    '',
+    'Warm regards,',
+    'The Axon Careers Team',
+  ].join('\n')
+  return `mailto:${to}?subject=${encodeURIComponent(
+    'Welcome to Axon Careers 🎉',
+  )}&body=${encodeURIComponent(body)}`
+}
+
 export default function Footer() {
   const [email, setEmail] = useState('')
   const [subscribed, setSubscribed] = useState(false)
+  const [mailtoUrl, setMailtoUrl] = useState('')
   const [lit, setLit] = useState(false)
   const wordmarkRef = useRef(null)
 
@@ -127,8 +170,13 @@ export default function Footer() {
   const onSubmit = (e) => {
     e.preventDefault()
     if (isEmail(email)) {
+      // Static site (no backend): send the subscriber a welcome email
+      // template with Axon's contact details via their mail app.
+      const mailto = buildWelcomeMailto(email)
+      setMailtoUrl(mailto)
       setSubscribed(true)
       setEmail('')
+      window.location.href = mailto
     }
   }
 
@@ -143,7 +191,32 @@ export default function Footer() {
             Get nursing-abroad tips and updates from Axon Careers
           </p>
           {subscribed ? (
-            <p className="footer__news-done">✓ Thanks — you're subscribed.</p>
+            <div className="footer__news-done">
+              <p className="footer__news-welcome">
+                ✓ Welcome to Axon Careers! We&apos;ve opened a welcome email
+                with our contact details for you.
+              </p>
+              <ul className="footer__news-contact">
+                <li>
+                  <span aria-hidden="true">📧</span>
+                  <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+                </li>
+                {CONTACT.phones.map((p) => (
+                  <li key={p.number}>
+                    <span aria-hidden="true">{p.flag}</span>
+                    <a href={`tel:${p.number.replace(/\s/g, '')}`}>{p.number}</a>
+                  </li>
+                ))}
+                <li>
+                  <span aria-hidden="true">💬</span> WhatsApp {CONTACT.whatsapp}
+                </li>
+              </ul>
+              {mailtoUrl && (
+                <a className="footer__news-link" href={mailtoUrl}>
+                  Open the welcome email <span aria-hidden="true">›</span>
+                </a>
+              )}
+            </div>
           ) : (
             <form className="footer__news-form" onSubmit={onSubmit} noValidate>
               <input

@@ -681,6 +681,11 @@
   transform: translateY(-0.16em);
 }
 
+/* Muted words keep the float interaction but sit in a lighter tone */
+.float-text .float-word--muted {
+  color: rgba(11, 15, 40, 0.42);
+}
+
 /* Optional accent: letters also turn blue on hover */
 .float-text--accent .float-letter:hover {
   color: var(--blue-accent);
@@ -784,9 +789,10 @@
   display: grid;
   grid-template-columns: 1.1fr 1.1fr 1fr;
   grid-template-areas:
-    "reg reg visa"
-    "reg reg visa"
-    "job eng student";
+    "reg  reg  visa"
+    "reg  reg  visa"
+    "exam exam exam"
+    "job  eng  student";
   gap: clamp(16px, 1.8vw, 24px);
 }
 .svc-card:nth-child(1) {
@@ -796,12 +802,15 @@
   grid-area: visa;
 }
 .svc-card:nth-child(3) {
-  grid-area: job;
+  grid-area: exam;
 }
 .svc-card:nth-child(4) {
-  grid-area: eng;
+  grid-area: job;
 }
 .svc-card:nth-child(5) {
+  grid-area: eng;
+}
+.svc-card:nth-child(6) {
   grid-area: student;
 }
 
@@ -916,6 +925,12 @@
   display: grid;
   gap: 10px;
 }
+/* Flat item lists flow into as many columns as the card is wide,
+   so the full-width Exam Training card spreads across the band. */
+.svc-card__items {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  column-gap: clamp(16px, 2vw, 32px);
+}
 .svc-grp__list li,
 .svc-card__items li {
   position: relative;
@@ -947,9 +962,10 @@
   .svc__bento {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-      "reg reg"
-      "visa job"
-      "eng student";
+      "reg  reg"
+      "visa exam"
+      "job  eng"
+      "student student";
   }
 }
 @media (max-width: 600px) {
@@ -958,6 +974,7 @@
     grid-template-areas:
       "reg"
       "visa"
+      "exam"
       "job"
       "eng"
       "student";
@@ -2689,6 +2706,18 @@
   padding: 14px 16px;
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.5;
+}
+.contact__success-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #15803d;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.contact__success-link:hover {
+  color: #0f6b30;
 }
 
 /* ============================================================
@@ -2790,8 +2819,45 @@
 
 .footer__news-done {
   margin-top: 24px;
+  max-width: 380px;
+}
+.footer__news-welcome {
   color: #6ee7a8;
   font-weight: 500;
+  line-height: 1.5;
+}
+.footer__news-contact {
+  list-style: none;
+  margin: 16px 0 0;
+  display: grid;
+  gap: 9px;
+}
+.footer__news-contact li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.72);
+}
+.footer__news-contact a {
+  color: rgba(255, 255, 255, 0.72);
+  transition: color 0.2s ease;
+}
+.footer__news-contact a:hover {
+  color: var(--white);
+}
+.footer__news-link {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  padding-bottom: 2px;
+  transition: border-color 0.2s ease;
+}
+.footer__news-link:hover {
+  border-color: var(--white);
 }
 
 .footer__divider {

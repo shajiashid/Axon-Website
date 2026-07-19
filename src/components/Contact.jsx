@@ -2,6 +2,28 @@ import { useEffect, useRef, useState } from 'react'
 
 const EMPTY = { name: '', email: '', phone: '', destination: 'New Zealand', message: '' }
 
+// Where enquiry submissions are sent.
+const ENQUIRY_EMAILS = ['osceapplication@gmail.com', 'info@axoncareers.co.nz']
+
+// Compose a pre-filled email (recipients + all answers) for the mailto scheme.
+function buildMailto(values) {
+  const lines = [
+    'New nursing enquiry',
+    '',
+    `Full name: ${values.name.trim() || '—'}`,
+    `Email: ${values.email.trim() || '—'}`,
+    `Phone: ${values.phone.trim() || '—'}`,
+    `Preferred destination: ${values.destination || '—'}`,
+    '',
+    'Goals:',
+    values.message.trim() || '—',
+  ]
+  const subject = `Nursing enquiry — ${values.name.trim() || 'Website'}`
+  return `mailto:${ENQUIRY_EMAILS.join(',')}?subject=${encodeURIComponent(
+    subject,
+  )}&body=${encodeURIComponent(lines.join('\n'))}`
+}
+
 function validate(values) {
   const errors = {}
   if (!values.name.trim()) errors.name = 'Please enter your name'
@@ -21,6 +43,7 @@ export default function Contact() {
   const [values, setValues] = useState(EMPTY)
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
+  const [mailtoUrl, setMailtoUrl] = useState('')
   const sectionRef = useRef(null)
 
   // Self-contained reveal so the section shows on every page (Home, About,
@@ -67,9 +90,13 @@ export default function Contact() {
     const found = validate(values)
     setErrors(found)
     if (Object.keys(found).length === 0) {
-      // No backend wired up — simulate a successful submission.
+      // Static site (no backend): send the enquiry as a pre-filled email
+      // to our advisors' inboxes via the visitor's mail app.
+      const mailto = buildMailto(values)
+      setMailtoUrl(mailto)
       setSent(true)
       setValues(EMPTY)
+      window.location.href = mailto
     }
   }
 
@@ -110,7 +137,14 @@ export default function Contact() {
         <form className="contact__form reveal" onSubmit={onSubmit} noValidate>
           {sent && (
             <div className="contact__success" role="status">
-              ✓ Thank you! Your enquiry has been received. We'll be in touch soon.
+              ✓ Thank you! We&apos;ve prepared an email with your details —
+              please review it in your mail app and press <strong>Send</strong>{' '}
+              to reach our advisors.
+              {mailtoUrl && (
+                <a className="contact__success-link" href={mailtoUrl}>
+                  Open the email &amp; send
+                </a>
+              )}
             </div>
           )}
 

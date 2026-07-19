@@ -20,6 +20,12 @@ const ICONS = {
       <path d="M3 13h18" />
     </svg>
   ),
+  exam: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="8" r="6" />
+      <path d="M8.21 13.89 7 22l5-3 5 3-1.21-8.11" />
+    </svg>
+  ),
   english: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
       <path d="m5 8 6 6" />
@@ -94,19 +100,30 @@ const SERVICES = [
   },
   {
     n: '03',
+    icon: 'exam',
+    title: 'Exam Training',
+    items: [
+      'New Zealand OSCE Training',
+      'Australia OSCE Training',
+      'NCLEX-RN Training',
+      'IQN Preparation',
+    ],
+  },
+  {
+    n: '04',
     icon: 'job',
     accent: true,
     title: 'Australia Nurses Job Placement Services',
     desc: 'Dedicated job-placement support connecting internationally qualified nurses with trusted healthcare employers across Australia.',
   },
   {
-    n: '04',
+    n: '05',
     icon: 'english',
     title: 'English Language Training',
     items: ['OET Coaching', 'IELTS Coaching', 'PTE Coaching'],
   },
   {
-    n: '05',
+    n: '06',
     icon: 'student',
     title: 'Student Visa Services',
     items: [

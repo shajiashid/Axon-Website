@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import FloatingHeading from './FloatingHeading.jsx'
 
 const ICONS = {
   registration: (
@@ -74,12 +75,13 @@ export default function ServiceCards() {
   return (
     <section id="support" className="section scards" ref={ref}>
       <div className="container">
-        <h2 className="scards__title">
-          End-to-end support,{' '}
-          <span className="scards__title-muted">
-            at every step of your nursing journey.
-          </span>
-        </h2>
+        <FloatingHeading
+          className="scards__title"
+          text="End-to-end support,"
+          muted="at every step of your nursing journey."
+          accent
+          playful
+        />
 
         <div className={`scards__grid ${inView ? 'scards__grid--in' : ''}`}>
           {CARDS.map((c, i) => (
