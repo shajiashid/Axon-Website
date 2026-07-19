@@ -84,7 +84,7 @@ export default function Navbar() {
                     </button>
                     <ul className="nav__submenu">
                       {link.dropdown.map((d) => (
-                        <li key={d.to}>
+                        <li key={d.type}>
                           <Link to={d.to} onClick={closeAll}>
                             {d.label}
                           </Link>

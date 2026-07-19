@@ -42,8 +42,9 @@ function buildMailto(form, values) {
   )}&body=${encodeURIComponent(lines.join('\n'))}`
 }
 
-export default function EnrollForm() {
-  const { type } = useParams()
+export default function EnrollForm({ type: typeProp }) {
+  const params = useParams()
+  const type = typeProp || params.type
   const form = getForm(type)
   const topRef = useRef(null)
 
@@ -76,7 +77,7 @@ export default function EnrollForm() {
           </p>
           <div className="enroll__tabs">
             {ENROLL_LINKS.map((l) => (
-              <Link key={l.to} to={l.to} className="enroll__tab">
+              <Link key={l.type} to={l.to} className="enroll__tab">
                 {l.label}
               </Link>
             ))}
@@ -291,9 +292,9 @@ export default function EnrollForm() {
         <div className="enroll__tabs">
           {ENROLL_LINKS.map((l) => (
             <Link
-              key={l.to}
+              key={l.type}
               to={l.to}
-              className={`enroll__tab ${l.to === `/enroll/${type}` ? 'is-active' : ''}`}
+              className={`enroll__tab ${l.type === type ? 'is-active' : ''}`}
             >
               {l.label}
             </Link>

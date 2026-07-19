@@ -29,7 +29,9 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/blogs" element={<BlogsPage />} />
         <Route path="/blogs/:slug" element={<BlogPost />} />
-        <Route path="/enroll/:type" element={<EnrollForm />} />
+        <Route path="/ahpra-application" element={<EnrollForm type="ahpra" />} />
+        <Route path="/osce-application" element={<EnrollForm type="osce" />} />
+        <Route path="/iqn-application" element={<EnrollForm type="iqn" />} />
       </Routes>
       <Footer />
       <WhatsAppButton />

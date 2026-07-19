@@ -368,11 +368,14 @@ export const FORMS = {
   },
 }
 
-// Order used for the nav dropdown and any listings.
+// Order used for the nav dropdown and the in-page form tabs.
+// Each form lives at a clean path that mirrors the official site
+// (e.g. axoncareers.co.nz/ahpra-application/). On submit the form
+// emails the entered details to the addresses in each FORMS[].emails.
 export const ENROLL_LINKS = [
-  { label: 'AHPRA Application', to: '/enroll/ahpra' },
-  { label: 'OSCE Application', to: '/enroll/osce' },
-  { label: 'IQN Application', to: '/enroll/iqn' },
+  { label: 'AHPRA Application', to: '/ahpra-application', type: 'ahpra' },
+  { label: 'OSCE Application', to: '/osce-application', type: 'osce' },
+  { label: 'IQN Application', to: '/iqn-application', type: 'iqn' },
 ]
 
 export function getForm(type) {
