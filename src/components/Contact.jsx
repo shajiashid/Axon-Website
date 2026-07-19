@@ -1,0 +1,193 @@
+import { useEffect, useRef, useState } from 'react'
+
+const EMPTY = { name: '', email: '', phone: '', destination: 'New Zealand', message: '' }
+
+function validate(values) {
+  const errors = {}
+  if (!values.name.trim()) errors.name = 'Please enter your name'
+  if (!values.email.trim()) {
+    errors.email = 'Please enter your email'
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+    errors.email = 'Enter a valid email address'
+  }
+  if (values.phone && !/^[+()\d\s-]{7,}$/.test(values.phone)) {
+    errors.phone = 'Enter a valid phone number'
+  }
+  if (!values.message.trim()) errors.message = 'Tell us a little about your goals'
+  return errors
+}
+
+export default function Contact() {
+  const [values, setValues] = useState(EMPTY)
+  const [errors, setErrors] = useState({})
+  const [sent, setSent] = useState(false)
+  const sectionRef = useRef(null)
+
+  // Self-contained reveal so the section shows on every page (Home, About,
+  // Blogs, post pages) without depending on the global useReveal hook.
+  useEffect(() => {
+    const el = sectionRef.current
+    if (!el) return
+    const reveals = el.querySelectorAll('.reveal')
+    const show = () => reveals.forEach((r) => r.classList.add('is-visible'))
+
+    let io
+    if ('IntersectionObserver' in window) {
+      io = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            show()
+            io.disconnect()
+          }
+        },
+        { threshold: 0.12 },
+      )
+      io.observe(el)
+    } else {
+      show()
+    }
+
+    // Safety net: never leave the section invisible if the observer
+    // hasn't fired (e.g. it's already on-screen on a short page).
+    const fallback = setTimeout(show, 1400)
+    return () => {
+      if (io) io.disconnect()
+      clearTimeout(fallback)
+    }
+  }, [])
+
+  const update = (e) => {
+    const { name, value } = e.target
+    setValues((v) => ({ ...v, [name]: value }))
+    setErrors((er) => ({ ...er, [name]: undefined }))
+  }
+
+  const onSubmit = (e) => {
+    e.preventDefault()
+    const found = validate(values)
+    setErrors(found)
+    if (Object.keys(found).length === 0) {
+      // No backend wired up — simulate a successful submission.
+      setSent(true)
+      setValues(EMPTY)
+    }
+  }
+
+  return (
+    <section id="contact" className="section contact" ref={sectionRef}>
+      <div className="container contact__grid">
+        <div className="contact__intro reveal">
+          <h2 className="section-title contact__title">
+            Start your nursing journey today
+          </h2>
+          <p className="contact__lead">
+            Share a few details and our advisors will get back to you within one
+            business day with a personalised roadmap.
+          </p>
+          <ul className="contact__info">
+            <li>
+              <span aria-hidden="true">✉️</span>
+              <a href="mailto:info@axoncareers.co.nz">info@axoncareers.co.nz</a>
+            </li>
+            <li>
+              <span aria-hidden="true">🇮🇳</span>
+              <a href="tel:+919947082800">+91 99470 82800</a>
+            </li>
+            <li>
+              <span aria-hidden="true">🇦🇪</span>
+              <a href="tel:+971558104647">+971 55 810 4647</a>
+            </li>
+            <li>
+              <span aria-hidden="true">🇳🇿</span>
+              <a href="tel:+64226822322">+64 22 682 2322</a>
+            </li>
+            <li>
+              <span aria-hidden="true">📍</span> Focused on New Zealand &amp; Australia
+            </li>
+          </ul>
+        </div>
+
+        <form className="contact__form reveal" onSubmit={onSubmit} noValidate>
+          {sent && (
+            <div className="contact__success" role="status">
+              ✓ Thank you! Your enquiry has been received. We'll be in touch soon.
+            </div>
+          )}
+
+          <div className="field">
+            <label htmlFor="name">Full name</label>
+            <input
+              id="name"
+              name="name"
+              value={values.name}
+              onChange={update}
+              placeholder="Jane Doe"
+              aria-invalid={!!errors.name}
+            />
+            {errors.name && <span className="field__error">{errors.name}</span>}
+          </div>
+
+          <div className="field-row">
+            <div className="field">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                value={values.email}
+                onChange={update}
+                placeholder="jane@email.com"
+                aria-invalid={!!errors.email}
+              />
+              {errors.email && <span className="field__error">{errors.email}</span>}
+            </div>
+            <div className="field">
+              <label htmlFor="phone">Phone (optional)</label>
+              <input
+                id="phone"
+                name="phone"
+                value={values.phone}
+                onChange={update}
+                placeholder="+91 ..."
+                aria-invalid={!!errors.phone}
+              />
+              {errors.phone && <span className="field__error">{errors.phone}</span>}
+            </div>
+          </div>
+
+          <div className="field">
+            <label htmlFor="destination">Preferred destination</label>
+            <select
+              id="destination"
+              name="destination"
+              value={values.destination}
+              onChange={update}
+            >
+              <option>New Zealand</option>
+              <option>Australia</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+
+          <div className="field">
+            <label htmlFor="message">Your goals</label>
+            <textarea
+              id="message"
+              name="message"
+              rows={4}
+              value={values.message}
+              onChange={update}
+              placeholder="Tell us about your nursing background and where you'd like to go..."
+              aria-invalid={!!errors.message}
+            />
+            {errors.message && <span className="field__error">{errors.message}</span>}
+          </div>
+
+          <button type="submit" className="btn btn-primary contact__submit">
+            Send enquiry
+          </button>
+        </form>
+      </div>
+    </section>
+  )
+}

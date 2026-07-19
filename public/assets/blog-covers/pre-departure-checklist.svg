@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17299a"/><stop offset="1" stop-color="#070c36"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="600" cy="330" r="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5cbcff" stop-opacity="0.4"/><stop offset="1" stop-color="#5cbcff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect width="1200" height="800" fill="url(#glow)"/>
+  <g stroke="#ffffff" stroke-opacity="0.06">
+    <circle cx="1085" cy="115" r="120"/><circle cx="1085" cy="115" r="195"/><circle cx="1085" cy="115" r="280"/>
+  </g>
+  <path d="M-20 648 H432 l38 -66 30 142 42 -200 34 154 40 -48 H1220" stroke="#ffffff" stroke-opacity="0.08" stroke-width="3"/>
+  <circle cx="600" cy="330" r="118" fill="#ffffff" fill-opacity="0.07" stroke="#5cbcff" stroke-opacity="0.55" stroke-width="2"/>
+  <g transform="translate(600 330) scale(3.9) translate(-12 -12)" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2"/><path d="M8 18V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14"/><path d="M10 20h4"/><circle cx="8" cy="20" r="2"/><circle cx="16" cy="20" r="2"/>
+  </g>
+  <text x="600" y="542" text-anchor="middle" fill="#5cbcff" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" letter-spacing="5">RELOCATION</text>
+  <text x="600" y="702" text-anchor="middle" fill="#ffffff" fill-opacity="0.5" font-family="Arial, Helvetica, sans-serif" font-size="21" font-weight="700" letter-spacing="4">AXON CAREERS</text>
+</svg>
