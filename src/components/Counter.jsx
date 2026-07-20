@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef, useState } from 'react'
 
 // Counts up from 0 to `target` (ease-out) the first time it scrolls into view.

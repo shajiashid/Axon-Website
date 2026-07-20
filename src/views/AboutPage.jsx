@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import FloatingHeading from '../components/FloatingHeading.jsx'
 import Contact from '../components/Contact.jsx'

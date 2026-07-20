@@ -1,5 +1,6 @@
+'use client'
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import FloatingHeading from '../components/FloatingHeading.jsx'
 import Contact from '../components/Contact.jsx'
 import { BLOGS } from '../data/blogs.js'
@@ -39,7 +40,7 @@ export default function BlogsPage() {
           {BLOGS.map((p, i) => (
             <Link
               key={p.slug}
-              to={`/blogs/${p.slug}`}
+              href={`/blogs/${p.slug}`}
               className="blogcard"
               style={{ transitionDelay: `${Math.min(i, 8) * 55}ms` }}
             >

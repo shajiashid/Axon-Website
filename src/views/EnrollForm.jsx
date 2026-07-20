@@ -1,5 +1,6 @@
+'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import Link from 'next/link'
 import { getForm, ENROLL_LINKS } from '../data/enrollForms.js'
 import { submitEnrollment } from '../lib/submitEnrollment.js'
 
@@ -42,11 +43,24 @@ function buildPayload(form, values) {
   }
 }
 
-export default function EnrollForm({ type: typeProp }) {
-  const params = useParams()
-  const type = typeProp || params.type
+// Largest file we'll send as an email attachment (keeps the request under
+// typical serverless body limits once base64-encoded).
+const MAX_FILE_BYTES = 4 * 1024 * 1024
+
+// Read a File into a base64 string (without the "data:...;base64," prefix).
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result).split(',')[1] || '')
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+export default function EnrollForm({ type }) {
   const form = getForm(type)
   const topRef = useRef(null)
+  const filesRef = useRef({}) // actual File objects, keyed by field name
 
   const [values, setValues] = useState(() => (form ? initialValues(form) : {}))
   const [errors, setErrors] = useState({})
@@ -58,6 +72,7 @@ export default function EnrollForm({ type: typeProp }) {
       setValues(initialValues(form))
       setErrors({})
       setSent(false)
+      filesRef.current = {}
     }
   }, [type]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -76,7 +91,7 @@ export default function EnrollForm({ type: typeProp }) {
           </p>
           <div className="enroll__tabs">
             {ENROLL_LINKS.map((l) => (
-              <Link key={l.type} to={l.to} className="enroll__tab">
+              <Link key={l.type} href={l.to} className="enroll__tab">
                 {l.label}
               </Link>
             ))}
@@ -152,14 +167,26 @@ export default function EnrollForm({ type: typeProp }) {
     }
 
     const payload = buildPayload(form, values)
-    // Show the confirmation right away; send in the background via Resend
-    // (PHP endpoint). We don't block the UI on the network round-trip.
+    const files = { ...filesRef.current }
+    // Show the confirmation right away; read any uploads and send in the
+    // background via Resend. We don't block the UI on the network round-trip.
     setSent(true)
     setValues(initialValues(form))
+    filesRef.current = {}
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    submitEnrollment(payload).catch((err) => {
-      console.error('Enrollment submission failed:', err)
-    })
+    ;(async () => {
+      try {
+        const attachments = []
+        for (const file of Object.values(files)) {
+          if (file) {
+            attachments.push({ filename: file.name, content: await fileToBase64(file) })
+          }
+        }
+        await submitEnrollment({ ...payload, attachments })
+      } catch (err) {
+        console.error('Enrollment submission failed:', err)
+      }
+    })()
   }
 
   const renderField = (f) => {
@@ -245,15 +272,28 @@ export default function EnrollForm({ type: typeProp }) {
     } else if (f.type === 'file') {
       const fileName = values[f.name]
       control = (
-        <label className={`ef-file ${fileName ? 'is-set' : ''}`}>
-          <input
-            id={id}
-            type="file"
-            onChange={(e) => setField(f.name, e.target.files?.[0]?.name || '')}
-          />
-          <span className="ef-file__btn">Choose file</span>
+        <div className={`ef-file ${fileName ? 'is-set' : ''}`}>
+          <label className="ef-file__btn">
+            Choose file
+            <input
+              id={id}
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file && file.size > MAX_FILE_BYTES) {
+                  filesRef.current[f.name] = null
+                  setField(f.name, '')
+                  setErrors((er) => ({ ...er, [f.name]: 'File is too large (max 4 MB)' }))
+                  e.target.value = ''
+                  return
+                }
+                filesRef.current[f.name] = file || null
+                setField(f.name, file?.name || '')
+              }}
+            />
+          </label>
           <span className="ef-file__name">{fileName || 'No file selected'}</span>
-        </label>
+        </div>
       )
     } else {
       control = (
@@ -295,7 +335,7 @@ export default function EnrollForm({ type: typeProp }) {
           {ENROLL_LINKS.map((l) => (
             <Link
               key={l.type}
-              to={l.to}
+              href={l.to}
               className={`enroll__tab ${l.type === type ? 'is-active' : ''}`}
             >
               {l.label}

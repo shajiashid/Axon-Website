@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from 'react'
 
 // Greetings in their original scripts. The browser renders each via the

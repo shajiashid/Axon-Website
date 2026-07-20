@@ -1,5 +1,5 @@
+'use client'
 import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
 import Hero from '../components/Hero.jsx'
 import About from '../components/About.jsx'
 import ServiceCards from '../components/ServiceCards.jsx'
@@ -10,21 +10,16 @@ import FAQ from '../components/FAQ.jsx'
 import Contact from '../components/Contact.jsx'
 import useReveal from '../hooks/useReveal.js'
 
-export default function Home() {
+export default function HomePage() {
   useReveal()
-  const { state } = useLocation()
 
-  // When arriving from another page with a target section, scroll to it.
+  // If arriving with a hash (e.g. /#services from another page), scroll to it.
   useEffect(() => {
-    if (state?.scrollTo) {
-      const el = document.getElementById(state.scrollTo)
-      if (el) {
-        requestAnimationFrame(() =>
-          el.scrollIntoView({ behavior: 'smooth' }),
-        )
-      }
-    }
-  }, [state])
+    const id = window.location.hash.replace('#', '')
+    if (!id) return
+    const el = document.getElementById(id)
+    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth' }))
+  }, [])
 
   return (
     <main>

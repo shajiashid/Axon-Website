@@ -1,5 +1,7 @@
+'use client'
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import Logo from './Logo.jsx'
 import { ENROLL_LINKS } from '../data/enrollForms.js'
 
@@ -15,8 +17,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [dropOpen, setDropOpen] = useState(null)
-  const { pathname } = useLocation()
-  const navigate = useNavigate()
+  const pathname = usePathname()
+  const router = useRouter()
   const isHome = pathname === '/'
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function Navbar() {
       if (el) el.scrollIntoView({ behavior: 'smooth' })
       else window.scrollTo({ top: 0, behavior: 'smooth' })
     } else {
-      navigate('/', { state: { scrollTo: id } })
+      router.push(`/#${id}`)
     }
   }
 
@@ -85,7 +87,7 @@ export default function Navbar() {
                     <ul className="nav__submenu">
                       {link.dropdown.map((d) => (
                         <li key={d.type}>
-                          <Link to={d.to} onClick={closeAll}>
+                          <Link href={d.to} onClick={closeAll}>
                             {d.label}
                           </Link>
                         </li>
@@ -96,7 +98,7 @@ export default function Navbar() {
               }
               return link.to ? (
                 <li key={link.label} className="nav__item">
-                  <Link to={link.to} onClick={closeAll}>
+                  <Link href={link.to} onClick={closeAll}>
                     {link.label}
                   </Link>
                 </li>

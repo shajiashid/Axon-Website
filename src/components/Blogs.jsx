@@ -1,5 +1,6 @@
+'use client'
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import FloatingHeading from './FloatingHeading.jsx'
 import { BLOGS } from '../data/blogs.js'
 
@@ -45,7 +46,7 @@ export default function Blogs() {
               <div className="blog-row__body">
                 <h3 className="blog-row__title">{p.title}</h3>
                 <p className="blog-row__excerpt">{p.excerpt}</p>
-                <Link to={`/blogs/${p.slug}`} className="blog-row__link">
+                <Link href={`/blogs/${p.slug}`} className="blog-row__link">
                   Read more
                   <span className="blog-row__arrow" aria-hidden="true">
                     →
@@ -53,7 +54,7 @@ export default function Blogs() {
                 </Link>
               </div>
               <Link
-                to={`/blogs/${p.slug}`}
+                href={`/blogs/${p.slug}`}
                 className="blog-row__media"
                 aria-label={p.title}
               >
@@ -64,7 +65,7 @@ export default function Blogs() {
         </div>
 
         <div className="blogs__more">
-          <Link to="/blogs" className="btn btn-outline blogs__more-btn">
+          <Link href="/blogs" className="btn btn-outline blogs__more-btn">
             View more articles
             <span aria-hidden="true">→</span>
           </Link>

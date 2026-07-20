@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef, useState } from 'react'
 import FloatingHeading from './FloatingHeading.jsx'
 import Counter from './Counter.jsx'

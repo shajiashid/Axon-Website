@@ -14,3 +14,8 @@ npm-debug.log*
 
 # resend secret (server-only)
 public/resend-config.php
+
+# next.js
+.next/
+out/
+next-env.d.ts

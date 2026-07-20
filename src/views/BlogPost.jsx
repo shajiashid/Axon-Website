@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import Link from 'next/link'
 import Contact from '../components/Contact.jsx'
 import { BLOGS, getBlog } from '../data/blogs.js'
 
@@ -15,8 +15,7 @@ function Block({ block }) {
   return <p className="post__p">{block.p}</p>
 }
 
-export default function BlogPost() {
-  const { slug } = useParams()
+export default function BlogPost({ slug }) {
   const post = getBlog(slug)
 
   if (!post) {
@@ -26,7 +25,7 @@ export default function BlogPost() {
           <p className="post__notfound">
             Sorry, we couldn&apos;t find that article.
           </p>
-          <Link to="/blogs" className="btn btn-outline">
+          <Link href="/blogs" className="btn btn-outline">
             ← Back to all articles
           </Link>
         </div>
@@ -41,7 +40,7 @@ export default function BlogPost() {
     <main className="post">
       <article>
         <header className="container post__head">
-          <Link to="/blogs" className="post__back">
+          <Link href="/blogs" className="post__back">
             <span aria-hidden="true">←</span> All articles
           </Link>
           <div className="post__meta">
@@ -73,13 +72,13 @@ export default function BlogPost() {
       <section className="container post__more">
         <div className="post__more-head">
           <h2 className="post__more-title">Keep reading</h2>
-          <Link to="/blogs" className="post__more-link">
+          <Link href="/blogs" className="post__more-link">
             All articles <span aria-hidden="true">→</span>
           </Link>
         </div>
         <div className="post__more-grid">
           {related.map((p) => (
-            <Link key={p.slug} to={`/blogs/${p.slug}`} className="blogcard">
+            <Link key={p.slug} href={`/blogs/${p.slug}`} className="blogcard">
               <div className="blogcard__media">
                 <img src={p.img} alt="" loading="lazy" />
               </div>
