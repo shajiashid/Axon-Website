@@ -21,29 +21,7 @@ function isFull(f) {
   return ['textarea', 'checkbox', 'file', 'consent'].includes(f.type)
 }
 
-// Compose a pre-filled email (recipients + all answers) for the scheme.
-function buildMailto(form, values) {
-  const lines = [form.title, '']
-  form.sections.forEach((section) => {
-    lines.push(section.heading.toUpperCase())
-    section.fields.forEach((f) => {
-      const v = values[f.name]
-      let display
-      if (f.type === 'consent') display = v ? 'Yes, agreed' : 'Not agreed'
-      else if (f.type === 'checkbox') display = v && v.length ? v.join(', ') : '—'
-      else display = String(v ?? '').trim() || '—'
-      lines.push(`  ${f.label}: ${display}`)
-    })
-    lines.push('')
-  })
-  const applicant = values.name || values.fullName || values.firstName || ''
-  const subject = `${form.title}${applicant ? ` — ${applicant}` : ''}`
-  return `mailto:${form.emails.join(',')}?subject=${encodeURIComponent(
-    subject,
-  )}&body=${encodeURIComponent(lines.join('\n'))}`
-}
-
-// Flatten answers into { "Field label": value } for the spreadsheet row.
+// Flatten answers into { "Field label": value } for the submission payload.
 function buildPayload(form, values) {
   const data = {}
   form.sections.forEach((section) => {
@@ -73,8 +51,6 @@ export default function EnrollForm({ type: typeProp }) {
   const [values, setValues] = useState(() => (form ? initialValues(form) : {}))
   const [errors, setErrors] = useState({})
   const [sent, setSent] = useState(false)
-  const [via, setVia] = useState('server') // 'server' | 'email'
-  const [mailtoUrl, setMailtoUrl] = useState('')
 
   // Reset when navigating between forms.
   useEffect(() => {
@@ -161,7 +137,7 @@ export default function EnrollForm({ type: typeProp }) {
     return errs
   }
 
-  const onSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault()
     const found = validate()
     setErrors(found)
@@ -176,24 +152,14 @@ export default function EnrollForm({ type: typeProp }) {
     }
 
     const payload = buildPayload(form, values)
-    const snapshot = values // keep answers for the email fallback
+    // Show the confirmation right away; send in the background via Resend
+    // (PHP endpoint). We don't block the UI on the network round-trip.
     setSent(true)
     setValues(initialValues(form))
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-
-    try {
-      // Primary: send the submission via Resend (serverless function).
-      await submitEnrollment(payload)
-      setVia('server')
-      setMailtoUrl('')
-    } catch (err) {
-      // Fallback (function unreachable, e.g. local dev): don't lose the data —
-      // open a pre-filled email to the scheme's addresses instead.
-      setVia('email')
-      const mailto = form.emails ? buildMailto(form, snapshot) : ''
-      setMailtoUrl(mailto)
-      if (mailto) window.location.href = mailto
-    }
+    submitEnrollment(payload).catch((err) => {
+      console.error('Enrollment submission failed:', err)
+    })
   }
 
   const renderField = (f) => {
@@ -342,40 +308,17 @@ export default function EnrollForm({ type: typeProp }) {
         {sent ? (
           <div className="enroll__success" role="status">
             <div className="enroll__success-mark">✓</div>
-            {via === 'email' ? (
-              <>
-                <h2>Almost there — send your details</h2>
-                <p>
-                  We&apos;ve prepared an email to our team with the details you
-                  entered. Please review it in your email app and press{' '}
-                  <strong>Send</strong> to complete your submission. If it did
-                  not open automatically, use the button below.
-                </p>
-                {mailtoUrl && (
-                  <a
-                    className="btn btn-primary enroll__success-cta"
-                    href={mailtoUrl}
-                  >
-                    Open the email &amp; send
-                  </a>
-                )}
-              </>
-            ) : (
-              <>
-                <h2>Application received</h2>
-                <p>
-                  Thank you — your details have been sent to our team and
-                  we&apos;ll be in touch shortly. You can safely close this
-                  page.
-                </p>
-              </>
-            )}
+            <h2>Application submitted successfully</h2>
+            <p>
+              Thank you! We&apos;ve received your application and our team will
+              reach out to you shortly.
+            </p>
             <button
               type="button"
               className="btn btn-outline"
               onClick={() => setSent(false)}
             >
-              Start over
+              Submit another application
             </button>
           </div>
         ) : (
