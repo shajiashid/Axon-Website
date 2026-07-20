@@ -11,3 +11,6 @@ npm-debug.log*
 # env
 .env
 .env.*
+
+# resend secret (server-only)
+public/resend-config.php

@@ -1,10 +1,11 @@
-// Sends an enrollment-form submission to the serverless function
-// (api/enroll.js), which emails it to the right inboxes via Resend.
+// Sends an enrollment-form submission to the PHP endpoint (public/enroll.php),
+// which emails it to the right inboxes via Resend.
 //
 // Same-origin request, so we can read the response and know if it truly sent.
-// Throws on any failure so the caller can fall back to the mailto flow
-// (e.g. during local `vite dev`, where /api isn't served).
-export const ENROLL_ENDPOINT = '/api/enroll'
+// Throws on any failure — a non-2xx status, a non-JSON body, or ok !== true —
+// so the caller can fall back to the mailto flow (e.g. during local `vite dev`,
+// where the .php is served as a static file rather than executed).
+export const ENROLL_ENDPOINT = '/enroll.php'
 
 export async function submitEnrollment(payload) {
   const res = await fetch(ENROLL_ENDPOINT, {
@@ -12,14 +13,16 @@ export async function submitEnrollment(payload) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-  if (!res.ok) {
-    let detail = ''
-    try {
-      detail = (await res.json()).error || ''
-    } catch {
-      /* ignore */
-    }
-    throw new Error(`Submit failed (${res.status}) ${detail}`)
+
+  const text = await res.text()
+  let json
+  try {
+    json = JSON.parse(text)
+  } catch {
+    throw new Error(`Unexpected response (${res.status})`)
   }
-  return res.json().catch(() => ({ ok: true }))
+  if (!res.ok || !json || json.ok !== true) {
+    throw new Error(json?.error || `Submit failed (${res.status})`)
+  }
+  return json
 }
