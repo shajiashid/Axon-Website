@@ -17,11 +17,13 @@
  */
 
 // Server-side recipient map (kept here, not sent from the browser, so no one
-// can redirect submissions elsewhere).
+// can redirect submissions elsewhere). All enrollment forms notify the same
+// two inboxes.
+const RECIPIENTS_ALL = ['osceapplication@gmail.com', 'info@axoncareers.co.nz']
 const RECIPIENTS = {
-  ahpra: ['ahpraapplication@gmail.com', 'info@axoncareers.co.nz'],
-  osce: ['osceapplication@gmail.com', 'info@axoncareers.co.nz'],
-  iqn: ['iqnapplication@gmail.com', 'info@axoncareers.co.nz'],
+  ahpra: RECIPIENTS_ALL,
+  osce: RECIPIENTS_ALL,
+  iqn: RECIPIENTS_ALL,
 }
 
 const FROM = process.env.RESEND_FROM || 'Axon Careers <forms@axoncareers.co.nz>'
